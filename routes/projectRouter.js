@@ -6,7 +6,11 @@ const {
   getSingleProject,
   deleteProject,
 } = require("../controller/projectController");
-const { getTasks, createTask } = require("../controller/taskController");
+const {
+  getTasks,
+  createTask,
+  getSingleTask,
+} = require("../controller/taskController");
 
 const protect = require("../middleware/authMiddleware");
 
@@ -23,4 +27,6 @@ router
   .route("/:projectId/task")
   .get(protect, getTasks)
   .post(protect, createTask);
+
+router.route("/:projectId/task/:taskId").get(protect, getSingleTask);
 module.exports = router;
