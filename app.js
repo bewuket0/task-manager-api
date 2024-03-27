@@ -14,6 +14,7 @@ const cors = require("cors");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const userRouter = require("./routes/userRouter");
 const taskRouter = require("./routes/taskRouter");
+const projectRouter = require("./routes/projectRouter");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,6 +24,7 @@ app.use(morgan("dev"));
 
 app.use("/api/v1/user", userRouter);
 // app.use("/api/v1/task", taskRouter);
+app.use("/api/v1/project", projectRouter);
 
 app.use(notFound);
 app.use(errorHandler);
