@@ -85,15 +85,17 @@ exports.createTask = tryCatch(async (req, res) => {
 
 exports.getTasks = tryCatch(async (req, res) => {
   const { userId } = req.user;
+  const projectId = req.params.projectId;
 
-  const projects = await Project.find({ users: userId });
+  const tasks = await Task.find({ project: projectId });
 
-  //   if (!projects) {
-  //     res.status(400);
-  //     throw new Error("projects not found !!!");
-  //   }
+  if (!tasks) {
+    res.status(400);
+    throw new Error("tasks for this project not found !!!");
+  }
+
   res.status(200).json({
     success: true,
-    data: projects,
+    data: tasks,
   });
 });
