@@ -1,6 +1,7 @@
 const { z } = require("zod");
 const User = require("../model/userModel");
 const { tryCatch } = require("../utils/tryCatch");
+const generateToken = require("../utils/generateToken");
 
 exports.getUser = async (req, res) => {
   try {
@@ -69,9 +70,19 @@ exports.loginUser = tryCatch(async (req, res) => {
     throw new Error("Invalid Email or Password !!");
   }
 
+  const tokenInfo = {
+    userId: user._id,
+    email: user.email,
+  };
+
+  generateToken(res, tokenInfo);
+
   res.status(200).json({
-    token: "token",
-    firstName: user.firstName,
-    lastName: user.lastName,
+    message: "user login successfully",
+    userInfo: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    },
   });
 });
