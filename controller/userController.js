@@ -1,4 +1,6 @@
 const { z } = require("zod");
+const User = require("../model/userModel");
+const { tryCatch } = require("../utils/tryCatch");
 
 exports.getUser = async (req, res) => {
   try {
@@ -6,21 +8,39 @@ exports.getUser = async (req, res) => {
     console.log(error);
   }
 };
-exports.reigsterUser = async (req, res) => {
+exports.reigsterUser = tryCatch(async (req, res) => {
   const userSchema = z.object({
-    name: z.string().min(1, "Name is required"),
+    firstName: z
+      .string()
+      .nonempty("first Name is required")
+      .max(30, "firstName must be less than or equal to 30 characters")
+      .min(2, "firstName must be more than 2 characters"),
+    lastName: z
+      .string()
+      .nonempty("last Name is required")
+      .max(30, "lastName must be less than or equal to 30 characters")
+      .min(2, "lastName must be more than 2 characters"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Confirm password must be at least 8 characters"),
   });
 
-  try {
-    const validatedData = userSchema.parse(req.body);
+  const { firstName, middleName, lastName, email, password, confirmPassword } =
+    req.body;
 
-    // If the validation is successful, proceed with your logic
-    // For example, save the user to the database
-    console.log("User data is valid:", validatedData);
-    res.status(200).json({ message: "User registered successfully" });
-  } catch (error) {
-    console.log(error);
+  const validatedData = userSchema.parse(req.body);
+  //   console.log("User data is valid:", validatedData);
+
+  const userExist = await User.findOne({ email });
+
+  if (userExist) {
+    res.status(400);
+    throw new Error("user already exist!!");
   }
-};
+
+  const user = await User.create(validatedData);
+
+  res.status(200).json({ message: "User registered successfully", user });
+});
