@@ -2,6 +2,7 @@ const { z } = require("zod");
 const { tryCatch } = require("../utils/tryCatch");
 const Task = require("../model/taskModel");
 const { default: mongoose } = require("mongoose");
+const Project = require("../model/projectModel");
 
 exports.createTask = tryCatch(async (req, res) => {
   const { userId } = req.user;
@@ -42,6 +43,12 @@ exports.createTask = tryCatch(async (req, res) => {
     throw new Error("task name already exist on this project !!!");
   }
 
+  const projectExist = await Project.findById(projectId);
+  if (!projectExist) {
+    res.status(400);
+    throw new Error("project doenot exist !!!");
+  }
+
   if (assignTo) {
     if (!mongoose.Types.ObjectId.isValid(assignTo)) {
       res.status(400);
@@ -63,6 +70,11 @@ exports.createTask = tryCatch(async (req, res) => {
     createdBy: userId,
     assignTo,
     project: projectId,
+  });
+
+  // Add the task ID to the tasks array of the project
+  await Project.findByIdAndUpdate(projectId, {
+    $push: { tasks: task._id },
   });
 
   res.status(201).json({
