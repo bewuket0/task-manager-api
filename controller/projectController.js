@@ -40,11 +40,32 @@ exports.getProjects = tryCatch(async (req, res) => {
 
   const projects = await Project.find({ users: userId });
 
+  //   if (!projects) {
+  //     res.status(400);
+  //     throw new Error("projects not found !!!");
+  //   }
   res.status(200).json({
     success: true,
     data: projects,
   });
 });
+exports.getSingleProject = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.id;
+
+  const project = await Project.findOne({ _id: projectId, users: userId });
+
+  if (!project) {
+    res.status(400);
+    throw new Error("User is not in the project or project does not exist");
+  }
+
+  res.status(200).json({
+    success: true,
+    data: project,
+  });
+});
+
 exports.updateProject = tryCatch(async (req, res) => {
   const { userId } = req.user;
   const projectId = req.params.id;
@@ -63,7 +84,7 @@ exports.updateProject = tryCatch(async (req, res) => {
     throw new Error("project not found !!!");
   }
 
-  if (project.createdBy !== userId) {
+  if (project.createdBy.toString() !== userId) {
     res.status(401);
     throw new Error("you don not have authority to delete this project !!!");
   }
@@ -78,7 +99,30 @@ exports.updateProject = tryCatch(async (req, res) => {
   await project.save();
 
   res.status(200).json({
-    success: true,
+    message: "project updated successfully",
     data: project,
+  });
+});
+
+exports.deleteProject = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.id;
+
+  const project = await Project.findById(projectId);
+
+  if (!project) {
+    res.status(400);
+    throw new Error("project not found !!!");
+  }
+
+  if (project.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error("you don not have authority to delete this project !!!");
+  }
+
+  await Project.deleteOne({ _id: projectId });
+
+  res.status(201).json({
+    message: "project deleted successfully",
   });
 });
