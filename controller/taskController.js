@@ -117,3 +117,45 @@ exports.getSingleTask = tryCatch(async (req, res) => {
     data: task,
   });
 });
+
+exports.assignTask = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.projectId;
+  const taskId = req.params.taskId;
+
+  const { assignTo } = req.body;
+
+  const task = await Task.find({ _id: taskId });
+
+  if (!task) {
+    res.status(400);
+    throw new Error("tasks not found !!!");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(assignTo)) {
+    res.status(400);
+    throw new Error("Invalid assignedTo user id value");
+  }
+  const userExists = await User.exists({ _id: assignTo });
+  if (!userExists) {
+    res.status(400);
+    throw new Error("User with provided assignTo ID does not exist");
+  }
+
+  const project = await Project.findById(projectId);
+
+  // check if the assignTo user exist on project.users list if not throw error
+  if (!project.users.includes(assignTo)) {
+    res.status(400);
+    throw new Error("assignto user isnot in the project ");
+  }
+
+  // update the task with assigned user
+  task.assignTo = assignTo;
+  await task.save();
+
+  res.status(200).json({
+    message: "task is assigned to user",
+    data: task,
+  });
+});
