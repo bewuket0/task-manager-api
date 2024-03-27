@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const taskSchema = new mongoose.Schema(
   {
     title: {
-      type: string,
+      type: String,
       required: [true, "title is required"],
       maxlength: 50,
     },
@@ -13,10 +13,12 @@ const taskSchema = new mongoose.Schema(
     },
     priority: {
       type: String,
+      default: "low",
       enum: ["high", "medium", "low"],
     },
     status: {
       type: String,
+      default: "todo",
       enum: ["inprogress", "todo", "complete", "review"],
     },
     createdBy: {
