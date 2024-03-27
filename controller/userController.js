@@ -44,3 +44,34 @@ exports.reigsterUser = tryCatch(async (req, res) => {
 
   res.status(200).json({ message: "User registered successfully", user });
 });
+
+exports.loginUser = tryCatch(async (req, res) => {
+  const loginSchema = z.object({
+    email: z.string().email("Invalid Email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+  });
+
+  const validateData = loginSchema.parse(req.body);
+
+  const { email, password } = validateData;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(400);
+    throw new Error("Invalid Email or Password !!");
+  }
+
+  const isPasswordValid = await user.matchPassword(password);
+
+  if (!isPasswordValid) {
+    res.status(400);
+    throw new Error("Invalid Email or Password !!");
+  }
+
+  res.status(200).json({
+    token: "token",
+    firstName: user.firstName,
+    lastName: user.lastName,
+  });
+});
