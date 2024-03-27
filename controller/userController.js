@@ -3,12 +3,6 @@ const User = require("../model/userModel");
 const { tryCatch } = require("../utils/tryCatch");
 const generateToken = require("../utils/generateToken");
 
-exports.getUser = async (req, res) => {
-  try {
-  } catch (error) {
-    console.log(error);
-  }
-};
 exports.reigsterUser = tryCatch(async (req, res) => {
   const userSchema = z.object({
     firstName: z
@@ -42,6 +36,13 @@ exports.reigsterUser = tryCatch(async (req, res) => {
   }
 
   const user = await User.create(validatedData);
+
+  const tokenInfo = {
+    userId: user._id,
+    email: user.email,
+  };
+
+  generateToken(res, tokenInfo);
 
   res.status(200).json({ message: "User registered successfully", user });
 });
