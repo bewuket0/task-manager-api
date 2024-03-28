@@ -50,3 +50,48 @@ components:
         phone: +251911223344
         name: fake name
         role: user
+    Task:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The ID of the task.
+        title:
+          type: string
+          description: The title of the task.
+        description:
+          type: string
+          description: The description of the task.
+        dueDate:
+          type: string
+          format: date-time
+          description: The due date of the task.
+        priority:
+          type: string
+          enum: [high, medium, low]
+          description: The priority of the task.
+        status:
+          type: string
+          enum: [inprogress, todo, completed, review]
+          description: The status of the task.
+        assignTo:
+          type: string
+          description: The ID of the user to whom the task is assigned.
+        project:
+          type: string
+          description: The ID of the project to which the task belongs.
+    Comment:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The ID of the comment.
+        message:
+          type: string
+          description: The content of the comment.
+        task:
+          type: string
+          description: The ID of the task to which the comment belongs.
+        author:
+          type: string
+          description: The ID of the user who authored the comment.
