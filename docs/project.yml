@@ -1,0 +1,56 @@
+/project:
+  post:
+    summary: Create a new project
+    description: Endpoint to create a new project.
+    tags:
+      - Projects
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the project.
+              description:
+                type: string
+    responses:
+      "201":
+        description: Project created successfully.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: A success message.
+                project:
+                  $ref: "#/components/schemas/Project"
+      "400":
+        description: Bad request. Invalid data provided.
+      "401":
+        description: Unauthorized. User not authenticated.
+      "500":
+        description: Internal server error.
+  get:
+    summary: Get all projects
+    tags:
+      - Projects
+    responses:
+      "201":
+        description: list of projects
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Project"
+      "400":
+        description: Bad request. Invalid data provided.
+      "401":
+        description: Unauthorized. User not authenticated.
+      "500":
+        description: Internal server error.

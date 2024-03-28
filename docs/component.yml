@@ -1,0 +1,52 @@
+components:
+  schemas:
+    Project:
+      type: object
+      properties:
+        _id:
+          type: objectId
+        name:
+          type: string
+        description:
+          type: string
+        createdBy:
+          type: string
+        tasks:
+          type: array
+        users:
+          type: array
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      example:
+        name: "project 1"
+        description: "some description 2"
+        createdBy: "6603ca8920ac89cfafdddb47"
+        tasks: []
+        users: ["6603ca8920ac89cfafdddb47"]
+        _id: "6604187aae3dd2ed6c98a43b"
+        createdAt: "2024-03-27T13:00:42.147Z"
+        updatedAt: "2024-03-27T13:00:42.147Z"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        firstname:
+          type: string
+        lastname:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+      example:
+        id: 5ebac534954b54139806c112
+        email: fake@example.com
+        phone: +251911223344
+        name: fake name
+        role: user

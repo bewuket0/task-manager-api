@@ -1,0 +1,23 @@
+/register:
+  post:
+    summary: "register user"
+    tags:
+      - Users
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+    responses:
+      "200":
+        description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+
+/login:
+  post:
+    tags:
+      - Users
+    summary: "login user"

@@ -22,6 +22,9 @@ const { notFound, errorHandler } = require("./middleware/errorHandler");
 const userRouter = require("./routes/userRouter");
 const taskRouter = require("./routes/taskRouter");
 const projectRouter = require("./routes/projectRouter");
+const swaggerDocs = require("./utils/swagger");
+
+swaggerDocs(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
