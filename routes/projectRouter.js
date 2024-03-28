@@ -5,12 +5,14 @@ const {
   updateProject,
   getSingleProject,
   deleteProject,
+  addUserToProject,
 } = require("../controller/projectController");
 const {
   getTasks,
   createTask,
   getSingleTask,
   deleteTask,
+  assignTask,
 } = require("../controller/taskController");
 
 const protect = require("../middleware/authMiddleware");
@@ -24,6 +26,8 @@ router
   .patch(protect, updateProject)
   .delete(protect, deleteProject);
 
+router.post("/:id/adduser", protect, addUserToProject);
+
 router
   .route("/:projectId/task")
   .get(protect, getTasks)
@@ -33,4 +37,5 @@ router
   .route("/:projectId/task/:taskId")
   .get(protect, getSingleTask)
   .delete(protect, deleteTask);
+router.post("/:projectId/task/:taskId/assign", protect, assignTask);
 module.exports = router;

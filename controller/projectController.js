@@ -1,6 +1,8 @@
 const { z } = require("zod");
 const { tryCatch } = require("../utils/tryCatch");
 const Project = require("../model/projectModel");
+const { default: mongoose } = require("mongoose");
+const User = require("../model/userModel");
 
 exports.createProject = tryCatch(async (req, res) => {
   const projectname = z
@@ -124,5 +126,46 @@ exports.deleteProject = tryCatch(async (req, res) => {
 
   res.status(201).json({
     message: "project deleted successfully",
+  });
+});
+
+exports.addUserToProject = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.id;
+  const { memberId } = req.body;
+
+  const project = await Project.findById(projectId);
+
+  if (!project) {
+    res.status(400);
+    throw new Error("project not found !!!");
+  }
+
+  if (project.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error(
+      "you don not have authority to add user to this project !!!"
+    );
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(memberId)) {
+    res.status(400);
+    throw new Error("Invalid member user id value");
+  }
+  const userExists = await User.exists({ _id: memberId });
+  if (!userExists) {
+    res.status(400);
+    throw new Error("User with provided member ID does not exist");
+  }
+
+  const updatedProject = await Project.findByIdAndUpdate(
+    projectId,
+    { $addToSet: { users: memberId } },
+    { new: true }
+  );
+
+  res.status(200).json({
+    message: "User added to project successfully",
+    project: updatedProject,
   });
 });

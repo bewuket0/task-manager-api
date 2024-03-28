@@ -3,6 +3,7 @@ const { tryCatch } = require("../utils/tryCatch");
 const Task = require("../model/taskModel");
 const { default: mongoose } = require("mongoose");
 const Project = require("../model/projectModel");
+const User = require("../model/userModel");
 
 exports.createTask = tryCatch(async (req, res) => {
   const { userId } = req.user;
