@@ -17,7 +17,7 @@ const protect = async (req, res, next) => {
 
     const token = tokenParts[1];
 
-    // ? optional fetching token
+    // ! optional fetching token
     // if (req.headers.authorization&& req.headers.authorization.split(' ')[1]) {
 
     //   token = req.header('authorization').split(' ')[1];

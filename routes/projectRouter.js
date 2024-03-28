@@ -12,6 +12,7 @@ const {
   createTask,
   getSingleTask,
   deleteTask,
+  updateTask,
   assignTask,
   sendComment,
 } = require("../controller/taskController");
@@ -37,6 +38,7 @@ router
 router
   .route("/:projectId/task/:taskId")
   .get(protect, getSingleTask)
+  .patch(protect, updateTask)
   .delete(protect, deleteTask);
 
 router.post("/:projectId/task/:taskId/assign", protect, assignTask);

@@ -121,6 +121,74 @@ exports.getSingleTask = tryCatch(async (req, res) => {
   });
 });
 
+exports.updateTask = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.projectId;
+  const taskId = req.params.taskId;
+
+  const taskSchema = z.object({
+    title: z
+      .string()
+      .nonempty("title is required")
+      .max(50, "title must be less than or equal to 50 characters")
+      .min(3, "title must be more than 3 characters"),
+    description: z
+      .string()
+      .max(150, "description must be less than or equal to 150 characters")
+      .optional(),
+
+    dueDate: z
+      .date()
+      .min(new Date(), { message: "should not be greater than current time" }),
+  });
+
+  const { title, description, dueDate, priority, status, assignTo } = req.body;
+
+  const validatedData = taskSchema.parse({
+    title,
+    description,
+    dueDate: new Date(dueDate),
+  });
+
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    res.status(400);
+    throw new Error("task not found !!!");
+  }
+
+  if (task.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error("you don not have authority to delete this task !!!");
+  }
+
+  task.title = validatedData.title;
+  task.description = validatedData.description;
+  task.dueDate = validatedData.dueDate;
+  task.priority = priority;
+  task.status = status;
+  task.assignTo = assignTo;
+
+  const updatedTask = await task.save();
+
+  if (updatedTask.assignTo) {
+    await sendNotification({
+      type: "task_updated",
+      content: `   ${task.title} : task is updated`,
+      recipient: task.assignTo,
+    });
+  }
+  await sendNotification({
+    type: "task_updated",
+    content: `   ${task.title} : task is updated`,
+    recipient: userId,
+  });
+
+  res.status(200).json({
+    message: "task updated successfully",
+    task: updatedTask,
+  });
+});
 exports.deleteTask = tryCatch(async (req, res) => {
   const { userId } = req.user;
   const projectId = req.params.projectId;
@@ -199,6 +267,12 @@ exports.assignTask = tryCatch(async (req, res) => {
     type: "task_assigned",
     content: `You have been assigned a task : ${task.title}`,
     recipient: assignTo,
+  });
+
+  await sendNotification({
+    type: "task_assigned",
+    content: `You have  assign a user for : ${task.title}`,
+    recipient: userId,
   });
 
   res.status(200).json({
