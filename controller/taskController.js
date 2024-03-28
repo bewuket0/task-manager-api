@@ -4,6 +4,7 @@ const Task = require("../model/taskModel");
 const { default: mongoose } = require("mongoose");
 const Project = require("../model/projectModel");
 const User = require("../model/userModel");
+const Comment = require("../model/commentModel");
 
 exports.createTask = tryCatch(async (req, res) => {
   const { userId } = req.user;
@@ -168,7 +169,7 @@ exports.assignTask = tryCatch(async (req, res) => {
   }
   if (task.createdBy.toString() !== userId) {
     res.status(401);
-    throw new Error("you don not have authority to delete this task !!!");
+    throw new Error("you don not have authority to assign this task !!!");
   }
 
   if (!mongoose.Types.ObjectId.isValid(assignTo)) {
@@ -196,5 +197,39 @@ exports.assignTask = tryCatch(async (req, res) => {
   res.status(200).json({
     message: "task is assigned to user",
     data: task,
+  });
+});
+
+exports.sendComment = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.projectId;
+  const taskId = req.params.taskId;
+
+  const { message } = req.body;
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    res.status(400);
+    throw new Error("tasks not found !!!");
+  }
+
+  const messageSchem = z
+    .string()
+    .max(200, "comment message cannot be more than 200 characters")
+    .optional();
+
+  const validMessage = messageSchem.parse(message);
+
+  const comment = await Comment.create({
+    message: validMessage,
+    task: taskId,
+    author: userId,
+  });
+
+  await Task.findByIdAndUpdate(taskId, { $push: { comments: comment._id } });
+
+  res.status(200).json({
+    message: "comment sent successfully",
+    comment,
   });
 });

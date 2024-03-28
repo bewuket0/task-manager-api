@@ -13,6 +13,7 @@ const {
   getSingleTask,
   deleteTask,
   assignTask,
+  sendComment,
 } = require("../controller/taskController");
 
 const protect = require("../middleware/authMiddleware");
@@ -37,5 +38,8 @@ router
   .route("/:projectId/task/:taskId")
   .get(protect, getSingleTask)
   .delete(protect, deleteTask);
+
 router.post("/:projectId/task/:taskId/assign", protect, assignTask);
+
+router.post("/:projectId/task/:taskId/comment", protect, sendComment);
 module.exports = router;

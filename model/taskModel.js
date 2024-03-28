@@ -34,6 +34,12 @@ const taskSchema = new mongoose.Schema(
       ref: "Project",
       required: [true, "project is required"],
     },
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   { timestamps: true }
 );
