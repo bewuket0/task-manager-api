@@ -11,6 +11,13 @@ connectDB();
 const app = express();
 const cors = require("cors");
 
+app.use(
+  cors({
+    origin: "",
+    credentials: true,
+  })
+);
+
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const userRouter = require("./routes/userRouter");
 const taskRouter = require("./routes/taskRouter");

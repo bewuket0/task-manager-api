@@ -17,6 +17,17 @@ const protect = async (req, res, next) => {
 
     const token = tokenParts[1];
 
+    // ? optional fetching token
+    // if (req.headers.authorization&& req.headers.authorization.split(' ')[1]) {
+
+    //   token = req.header('authorization').split(' ')[1];
+    // } else if (req.cookies && req.cookies.jwt) {
+    //   token = req.cookies.jwt;
+    // } else {
+    //   res.status(401);
+    //   throw new Error("token missing, Not authorized, no token");
+    // }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.userId).select("-password");

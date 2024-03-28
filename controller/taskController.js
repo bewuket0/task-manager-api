@@ -5,6 +5,7 @@ const { default: mongoose } = require("mongoose");
 const Project = require("../model/projectModel");
 const User = require("../model/userModel");
 const Comment = require("../model/commentModel");
+const sendNotification = require("../utils/sendNotification");
 
 exports.createTask = tryCatch(async (req, res) => {
   const { userId } = req.user;
@@ -193,6 +194,12 @@ exports.assignTask = tryCatch(async (req, res) => {
   // update the task with assigned user
   task.assignTo = assignTo;
   await task.save();
+
+  await sendNotification({
+    type: "task_assigned",
+    content: `You have been assigned a task : ${task.title}`,
+    recipient: assignTo,
+  });
 
   res.status(200).json({
     message: "task is assigned to user",
