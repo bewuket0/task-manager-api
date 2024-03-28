@@ -90,11 +90,18 @@ exports.getTasks = tryCatch(async (req, res) => {
   const { userId } = req.user;
   const projectId = req.params.projectId;
 
-  const tasks = await Task.find({ project: projectId });
+  let query = { project: projectId };
+
+  const { duedate, status, priority } = req.query;
+  if (duedate) query.dueDate = duedate;
+  if (status) query.status = status;
+  if (priority) query.priority = priority;
+
+  const tasks = await Task.find(query);
 
   if (!tasks) {
     res.status(400);
-    throw new Error("tasks for this project not found !!!");
+    throw new Error("Tasks for this project not found !!!");
   }
 
   res.status(200).json({
