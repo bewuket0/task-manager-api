@@ -118,6 +118,40 @@ exports.getSingleTask = tryCatch(async (req, res) => {
   });
 });
 
+exports.deleteTask = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.projectId;
+  const taskId = req.params.taskId;
+
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    res.status(400);
+    throw new Error("task not found !!!");
+  }
+
+  if (task.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error("you don not have authority to delete this task !!!");
+  }
+
+  const project = await Project.findById(projectId);
+  if (!project) {
+    res.status(400);
+    throw new Error("project not found !!!");
+  }
+
+  // Remove the taskId from the tasks array of the project
+  await Project.findByIdAndUpdate(projectId, { $pull: { tasks: taskId } });
+
+  // Delete the task
+  await Task.findByIdAndDelete(taskId);
+
+  res.status(200).json({
+    message: "task deleted successfully",
+  });
+});
+
 exports.assignTask = tryCatch(async (req, res) => {
   const { userId } = req.user;
   const projectId = req.params.projectId;
