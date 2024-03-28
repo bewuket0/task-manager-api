@@ -162,6 +162,18 @@ exports.updateTask = tryCatch(async (req, res) => {
     throw new Error("you don not have authority to delete this task !!!");
   }
 
+  if (assignTo) {
+    if (!mongoose.Types.ObjectId.isValid(assignTo)) {
+      res.status(400);
+      throw new Error("Invalid assignedTo user id value");
+    }
+    const userExists = await User.exists({ _id: assignTo });
+    if (!userExists) {
+      res.status(400);
+      throw new Error("User with provided assignTo ID does not exist");
+    }
+  }
+
   task.title = validatedData.title;
   task.description = validatedData.description;
   task.dueDate = validatedData.dueDate;
@@ -312,5 +324,42 @@ exports.sendComment = tryCatch(async (req, res) => {
   res.status(200).json({
     message: "comment sent successfully",
     comment,
+  });
+});
+
+exports.changeStatus = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.projectId;
+  const taskId = req.params.taskId;
+
+  const { status } = req.body;
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    res.status(400);
+    throw new Error("tasks not found !!!");
+  }
+
+  if (task.assignTo) {
+    if (task.assignTo.toString() !== userId) {
+      res.status(401);
+      throw new Error(
+        "you don not have authority to change this task status !!!"
+      );
+    }
+  }
+  if (task.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error(
+      "you don not have authority to change this task status !!!"
+    );
+  }
+
+  task.status = status;
+  await task.save();
+
+  res.status(200).json({
+    message: "status changed successfully",
+    task,
   });
 });

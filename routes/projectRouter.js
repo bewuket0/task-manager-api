@@ -15,6 +15,7 @@ const {
   updateTask,
   assignTask,
   sendComment,
+  changeStatus,
 } = require("../controller/taskController");
 
 const protect = require("../middleware/authMiddleware");
@@ -44,4 +45,6 @@ router
 router.post("/:projectId/task/:taskId/assign", protect, assignTask);
 
 router.post("/:projectId/task/:taskId/comment", protect, sendComment);
+
+router.post("/:projectId/task/:taskId/status", protect, changeStatus);
 module.exports = router;
