@@ -160,11 +160,15 @@ exports.assignTask = tryCatch(async (req, res) => {
 
   const { assignTo } = req.body;
 
-  const task = await Task.find({ _id: taskId });
+  const task = await Task.findById(taskId);
 
   if (!task) {
     res.status(400);
     throw new Error("tasks not found !!!");
+  }
+  if (task.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error("you don not have authority to delete this task !!!");
   }
 
   if (!mongoose.Types.ObjectId.isValid(assignTo)) {
