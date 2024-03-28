@@ -42,9 +42,11 @@ exports.reigsterUser = tryCatch(async (req, res) => {
     email: user.email,
   };
 
-  generateToken(res, tokenInfo);
+  const token = generateToken(res, tokenInfo);
 
-  res.status(200).json({ message: "User registered successfully", user });
+  res
+    .status(200)
+    .json({ message: "User registered successfully", token, user });
 });
 
 exports.loginUser = tryCatch(async (req, res) => {
@@ -76,10 +78,11 @@ exports.loginUser = tryCatch(async (req, res) => {
     email: user.email,
   };
 
-  generateToken(res, tokenInfo);
+  const token = generateToken(res, tokenInfo);
 
   res.status(200).json({
     message: "user login successfully",
+    token,
     userInfo: {
       firstName: user.firstName,
       lastName: user.lastName,
