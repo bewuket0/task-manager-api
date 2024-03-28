@@ -358,6 +358,20 @@ exports.changeStatus = tryCatch(async (req, res) => {
   task.status = status;
   await task.save();
 
+  if (task.assignTo) {
+    await sendNotification({
+      type: "task_updated",
+      content: `task status changed for : ${task.title}`,
+      recipient: task.assignTo,
+    });
+  }
+
+  await sendNotification({
+    type: "task_updated",
+    content: `task status changed for : ${task.title}`,
+    recipient: task.createdBy,
+  });
+
   res.status(200).json({
     message: "status changed successfully",
     task,
