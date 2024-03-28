@@ -169,3 +169,54 @@ exports.addUserToProject = tryCatch(async (req, res) => {
     project: updatedProject,
   });
 });
+
+exports.generateReport = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+  const projectId = req.params.id;
+
+  const project = await Project.findById(projectId).populate("tasks");
+
+  if (!project) {
+    res.status(400);
+    throw new Error("project not found !!!");
+  }
+
+  if (project.createdBy.toString() !== userId) {
+    res.status(401);
+    throw new Error(
+      "you don not have authority to add user to this project !!!"
+    );
+  }
+
+  let completedTasks = 0;
+  let overdueTasks = 0;
+  let inProgressTasks = 0;
+  let totalTasks = project.tasks.length;
+
+  project.tasks.forEach((task) => {
+    if (task.status === "completed") {
+      completedTasks++;
+    }
+    if (task.dueDate && new Date(task.dueDate) < new Date()) {
+      overdueTasks++;
+    }
+    if (task.status === "inprogress") {
+      inProgressTasks++;
+    }
+  });
+
+  const completedPercentage = (completedTasks / totalTasks) * 100;
+
+  const report = {
+    totalTasks,
+    completedTasks,
+    completedPercentage,
+    overdueTasks,
+    inProgressTasks,
+  };
+
+  res.status(200).json({
+    message: "report generated successfully",
+    report,
+  });
+});

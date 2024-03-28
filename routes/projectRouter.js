@@ -6,6 +6,7 @@ const {
   getSingleProject,
   deleteProject,
   addUserToProject,
+  generateReport,
 } = require("../controller/projectController");
 const {
   getTasks,
@@ -30,6 +31,7 @@ router
   .delete(protect, deleteProject);
 
 router.post("/:id/adduser", protect, addUserToProject);
+router.get("/:id/report", protect, generateReport);
 
 router
   .route("/:projectId/task")

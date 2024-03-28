@@ -8,7 +8,7 @@ const options = {
       title: "taskmanager docs",
       version: "1.0.0",
     },
-    server: [{ url: "http://localhost:5555/api/v1" }],
+    server: [{ url: "http://localhost:5555/" }],
     components: {
       securitySchemes: {
         bearerAuth: {
