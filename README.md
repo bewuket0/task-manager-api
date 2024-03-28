@@ -32,4 +32,4 @@ npm install
 npm run server
 ```
 
-the documentation is available on the : <url>/docs
+the documentation is available on the : url/docs
