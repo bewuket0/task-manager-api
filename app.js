@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 app.use("/api/v1/user", userRouter);
-// app.use("/api/v1/task", taskRouter);
+app.use("/api/v1/task", taskRouter);
 app.use("/api/v1/project", projectRouter);
 
 app.use(notFound);

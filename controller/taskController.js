@@ -384,3 +384,32 @@ exports.changeStatus = tryCatch(async (req, res) => {
     task,
   });
 });
+
+exports.dashboardData = tryCatch(async (req, res) => {
+  const { userId } = req.user;
+
+  const { priority, status } = req.query;
+
+  const query = { $or: [{ createdBy: userId }, { assignTo: userId }] };
+
+  if (priority) {
+    query.priority = priority;
+  }
+  if (status) {
+    query.status = status;
+  }
+
+  const tasks = await Task.find(query)
+    .populate("createdBy", "-password")
+    .populate("assignTo", "-password")
+    .populate("project");
+
+  if (!tasks) {
+    res.status(400);
+    throw new Error("Tasks for this project not found !!!");
+  }
+
+  res.status(200).json({
+    tasks,
+  });
+});
