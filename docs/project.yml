@@ -1,4 +1,4 @@
-/project:
+/api/v1/project:
   post:
     summary: Create a new project
     description: Endpoint to create a new project.
@@ -35,13 +35,14 @@
         description: Unauthorized. User not authenticated.
       "500":
         description: Internal server error.
+
   get:
     summary: Get all projects
     tags:
       - Projects
     responses:
-      "201":
-        description: list of projects
+      "200":
+        description: List of projects
         content:
           application/json:
             schema:
@@ -52,5 +53,134 @@
         description: Bad request. Invalid data provided.
       "401":
         description: Unauthorized. User not authenticated.
+      "500":
+        description: Internal server error.
+
+/api/v1/project/{id}:
+  get:
+    summary: Get single project
+    tags:
+      - Projects
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the project to retrieve.
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Project retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      "400":
+        description: Bad request. Invalid data provided.
+      "401":
+        description: Unauthorized. User not authenticated.
+      "404":
+        description: Project not found.
+      "500":
+        description: Internal server error.
+
+  patch:
+    summary: Update a project
+    tags:
+      - Projects
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the project to update.
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the project.
+              description:
+                type: string
+                description: The description of the project.
+    responses:
+      "200":
+        description: Project updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      "400":
+        description: Bad request. Invalid data provided.
+      "401":
+        description: Unauthorized. User not authorized.
+      "404":
+        description: Project not found.
+      "500":
+        description: Internal server error.
+
+  delete:
+    summary: Delete a project
+    tags:
+      - Projects
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the project to delete.
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Project deleted successfully.
+      "400":
+        description: Bad request. Invalid data provided.
+      "401":
+        description: Unauthorized. User not authorized.
+      "404":
+        description: Project not found.
+      "500":
+        description: Internal server error.
+
+/api/v1/project/{id}/adduser:
+  post:
+    summary: Add user to project
+    tags:
+      - Projects
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the project to which the user will be added.
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              memberId:
+                type: string
+                description: ID of the user to be added to the project.
+    responses:
+      "200":
+        description: User added to project successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      "400":
+        description: Bad request. Invalid data provided.
+      "401":
+        description: Unauthorized. User not authorized.
+      "404":
+        description: Project not found.
       "500":
         description: Internal server error.

@@ -410,6 +410,7 @@ exports.dashboardData = tryCatch(async (req, res) => {
   }
 
   res.status(200).json({
+    totalTask: tasks.length,
     tasks,
   });
 });
